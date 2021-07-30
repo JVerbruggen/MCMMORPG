@@ -1,0 +1,12 @@
+main: com.MeneerPinguin.
+name: MCMMORPG
+version: 1
+authors: [MeneerPinguin]
+api-version: 1.17
+load: POSTWORLD
+depend: [ProtocolLib]
+permissions:
+
+commands:
+  mcmmorpg:
+    aliases: [rpg]
