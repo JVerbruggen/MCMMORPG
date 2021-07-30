@@ -1,8 +1,10 @@
 package com.MeneerPinguin.MCMMORPG.entity.behaviour;
 
 import com.MeneerPinguin.MCMMORPG.common.log.LocationMath;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.List;
@@ -24,20 +26,24 @@ public class DefaultAggression extends BaseBehaviour {
 
     @Override
     public Location tick(Location location) {
-        List<Entity> entities = LocationMath.getNearbyEntities(location, dx, dy, dz);
+//        List<Player> entities = LocationMath.getNearbyPlayers(location, 1);
+//
+//
+//        if(this.targeting != null){
+//            if(!entities.contains(targeting)){
+//                targeting = null;
+//            }
+//        }
+//
+//        if(this.targeting == null && entities.size() > 0){
+//            this.targeting = entities.get(0);
+//        }
+
+        this.targeting = Bukkit.getPlayer("MeneerPinguin");
 
         if(this.targeting != null){
-            if(!entities.contains(targeting)){
-                targeting = null;
-            }
-        }
-
-        if(this.targeting == null && entities.size() > 0){
-            this.targeting = entities.get(0);
-        }
-
-        if(this.targeting != null){
-            return location.clone().add(LocationMath.moveTowards(location, this.targeting.getLocation(), this.speed));
+            return location.add(0, 0.05, 0);
+            //return location.clone().add(LocationMath.moveTowards(location, this.targeting.getLocation(), this.speed));
         }else{
             return location;
         }

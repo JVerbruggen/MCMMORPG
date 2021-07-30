@@ -1,11 +1,16 @@
 package com.MeneerPinguin.MCMMORPG.common.log;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -33,8 +38,36 @@ public class LocationMath {
         World world = location.getWorld();
         if(world == null) return new ArrayList<>();
 
-        Collection<Entity> nearbyEntities = world.getNearbyEntities(location, dx, dy, dz);
+        Collection<Entity> nearbyEntities = world.getNearbyEntities(location, dx, dy, dz, ent -> ent.getType() == EntityType.PLAYER);
         return new ArrayList<>(nearbyEntities);
+    }
+
+    public static List<Player> getNearbyPlayers(Location location, int chunkDistance){
+        List<Player> entities = new ArrayList<>();
+
+        World world = location.getWorld();
+        if(world == null) return entities;
+
+        int upperBounds = 16*chunkDistance;
+        int lowerBounds = -upperBounds;
+
+        Chunk upperBoundsChunk = location.clone().add(upperBounds, 0, upperBounds).getChunk();
+        Chunk lowerBoundsChunk = location.clone().add(lowerBounds, 0, lowerBounds).getChunk();
+
+        int upperChunkX = upperBoundsChunk.getX();
+        int upperChunkZ = upperBoundsChunk.getZ();
+        int lowerChunkX = lowerBoundsChunk.getX();
+        int lowerChunkZ = lowerBoundsChunk.getZ();
+
+        for(int x = lowerChunkX; x <= upperChunkX; x++){
+            for(int z = lowerChunkZ; z <= upperChunkZ; z++){
+                Chunk chunk = world.getChunkAt(x, z);
+
+                entities.addAll(Arrays.asList(chunk.getEntities()).stream().filter(ent -> ent instanceof Player).map(ent -> (Player)ent).toList());
+            }
+        }
+
+        return entities;
     }
 
     /**

@@ -14,6 +14,14 @@ import java.util.UUID;
 
 public class PacketSender {
 
+    /**
+     * Send a move look packet to a list of viewers
+     * @param viewers
+     * @param entityId
+     * @param v
+     * @param yaw
+     * @param pitch
+     */
     public static void moveLook(List<Player> viewers, int entityId, Vector v, float yaw, float pitch){
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.REL_ENTITY_MOVE_LOOK);
         packet.getIntegers()
@@ -31,6 +39,13 @@ public class PacketSender {
         sendPacket(viewers, packet);
     }
 
+    /**
+     * Send a entity spawn packet to a viewer
+     * @param viewer
+     * @param entityId
+     * @param entityType
+     * @param location
+     */
     public static void spawn(Player viewer, int entityId, int entityType, Location location){
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
         packet.getIntegers()
@@ -48,6 +63,11 @@ public class PacketSender {
         sendPacket(viewer, packet);
     }
 
+    /**
+     * Send a destroy entity packet to a viewer
+     * @param viewer
+     * @param entityId
+     */
     public static void destroy(Player viewer, int entityId){
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.ENTITY_DESTROY);
         packet.getIntegerArrays()

@@ -1,4 +1,4 @@
-main: com.MeneerPinguin.
+main: com.MeneerPinguin.MCMMORPG.Main
 name: MCMMORPG
 version: 1
 authors: [MeneerPinguin]
@@ -8,5 +8,4 @@ depend: [ProtocolLib]
 permissions:
 
 commands:
-  mcmmorpg:
-    aliases: [rpg]
+  rpg:

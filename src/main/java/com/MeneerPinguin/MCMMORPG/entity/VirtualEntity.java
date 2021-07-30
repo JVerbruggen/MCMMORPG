@@ -1,17 +1,23 @@
 package com.MeneerPinguin.MCMMORPG.entity;
 
+import com.MeneerPinguin.MCMMORPG.common.log.LocationMath;
 import com.MeneerPinguin.MCMMORPG.entity.behaviour.BaseBehaviour;
 import com.MeneerPinguin.MCMMORPG.packets.PacketSender;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class VirtualEntity {
     protected List<Player> viewers;
+
+    protected Sound damageSound = Sound.ENTITY_ZOMBIE_HURT;
 
     protected Location previousLocation;
     protected Location location;
@@ -24,10 +30,12 @@ public class VirtualEntity {
     protected boolean alive = true;
     protected boolean chunkloaded = false;
 
+    private int lookForNewViewersCounter = 0;
+
     protected BaseBehaviour behaviour;
 
     public VirtualEntity(Location location, int maxHealth, BaseBehaviour behaviour){
-        this.location = location;
+        this.location = this.previousLocation = location;
         this.chunkDrawDistance = 2;
         this.maxHealth = this.health = maxHealth;
         this.behaviour = behaviour;
@@ -37,6 +45,17 @@ public class VirtualEntity {
 
     public void tick(){
         this.location = behaviour.tick(this.location);
+
+        if(lookForNewViewersCounter >= 20){
+            lookForNewViewersCounter = 0;
+
+            setViewers(LocationMath.getNearbyPlayers(location, 2));
+            Bukkit.broadcastMessage("viewers:" + viewers.size());
+            Bukkit.broadcastMessage("loc:" + location);
+        }else{
+            lookForNewViewersCounter++;
+        }
+
 
         if(viewers.size() > 0){
             Vector v = location.toVector().subtract(previousLocation.toVector());
@@ -58,6 +77,7 @@ public class VirtualEntity {
         if(health == 0) return;
 
         health -= damage;
+        location.getWorld().playSound(location, damageSound, 1, 1); // Change to send to viewers only
 
         if(health < 0){
             health = 0;
@@ -106,6 +126,22 @@ public class VirtualEntity {
 
         if(removed){
             PacketSender.destroy(viewer, entityId);
+        }
+    }
+
+    public void setViewers(List<Player> newViewers){
+        Iterator<Player> i = viewers.iterator();
+        while(i.hasNext()){
+            Player viewer = i.next();
+            if(newViewers.contains(viewer)){
+                newViewers.remove(viewer);
+            }else{
+                this.removeViewer(viewer);
+            }
+        }
+
+        for(Player viewer : newViewers){
+            addViewer(viewer);
         }
     }
 
